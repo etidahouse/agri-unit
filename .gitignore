@@ -1,0 +1,40 @@
+# Misc
+.DS_Store
+
+# Outputs
+build
+!sh/build
+coverage
+documentation
+.eslintcache
+tsconfig.tsbuildinfo
+flamegraph.html
+
+# IDEs
+.idea
+
+# Logs
+logs
+*.log
+*.log.*
+*.dump
+
+# Secrets
+*.secret.*
+*.secret
+
+# Temporary
+*.temp.*
+*.temp
+*.tmp.*
+*.tmp
+
+# Local
+*.local.*
+*.local
+
+# Env
+*.env
+.env
+*.env.*
+*.envrc*
