@@ -88,8 +88,11 @@ func HandleAgriUnitSurveyIngest(
 		if _, seen := seenIDNumsInCsv[idNum]; !seen {
 			seenIDNumsInCsv[idNum] = struct{}{}
 			if _, exists := agriUnitsByIDNum[idNum]; !exists {
+				lat, lon := misc.GenerateRandomCoordinates(0, 0, 0, 0)
 				newUnit := CreateAgriculturalUnit(AgriculturalUnitValue{
-					IDNum: idNum,
+					IDNum:     idNum,
+					Latitude:  lat,
+					Longitude: lon,
 				})
 				newAgriUnits = append(newAgriUnits, newUnit)
 			}

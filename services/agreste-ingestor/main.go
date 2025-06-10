@@ -1,4 +1,4 @@
-package agresteingestor
+package main
 
 import (
 	"agreste-ingestor/agri_units"

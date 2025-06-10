@@ -1,0 +1,32 @@
+services:
+
+  postgres:
+    image: postgres:15-alpine 
+    environment:
+      POSTGRES_DB: mydatabase          
+      POSTGRES_USER: postgres          
+      POSTGRES_PASSWORD: mysecretpassword 
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+
+  ingestor:    
+    image: etidahouse/agreste-ingestor:latest
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: mysecretpassword
+      DB_NAME: mydatabase
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    volumes:
+      - ./wait-for-it:/usr/local/bin/wait-for-it
+    entrypoint: ["bash", "/usr/local/bin/wait-for-it", "postgres:5432", "--", "/root/ingestor"]
+
+volumes:
+  db_data:
