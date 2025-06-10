@@ -69,7 +69,6 @@ func MockDownloadZipAndReadSpecificCSV(endpointURL string, fileName string) ([][
 }
 
 func TestHandleAgriUnitSurveyIngest_Success(t *testing.T) {
-
 	existingUnit1 := AgriculturalUnit{ID: uuid.New(), IDNum: 101, CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	existingSurvey1 := AgriculturalUnitSurvey{ID: uuid.New(), IDNum: 101, Year: 2023, Data: map[string]interface{}{"foo": "bar"}, CreatedAt: time.Now(), UpdatedAt: time.Now()}
 

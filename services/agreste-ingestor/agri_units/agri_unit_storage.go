@@ -77,7 +77,6 @@ type agriUnitStorage struct {
 }
 
 func NewAgriUnitStorage(querier storage.DBQuerier) AgriUnitStorage {
-
 	return &agriUnitStorage{
 		querier: querier,
 		builder: sq.StatementBuilder.PlaceholderFormat(sq.Dollar),
