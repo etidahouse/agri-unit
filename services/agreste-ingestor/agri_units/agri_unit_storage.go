@@ -13,14 +13,14 @@ import (
 )
 
 type AgriculturalUnitSqlView struct {
-	ID         string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	ArchivedAt sql.NullTime
+	ID         string       `db:"id"`
+	CreatedAt  time.Time    `db:"created_at"`
+	UpdatedAt  time.Time    `db:"updated_at"`
+	ArchivedAt sql.NullTime `db:"archived_at"`
 
-	IDNum     int
-	Latitude  float64
-	Longitude float64
+	IDNum     int     `db:"id_num"`
+	Latitude  float64 `db:"latitude"`
+	Longitude float64 `db:"longitude"`
 }
 
 func AgriculturalUnitToSqlView(unit AgriculturalUnit) AgriculturalUnitSqlView {

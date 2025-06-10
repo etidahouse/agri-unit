@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+
+SH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+PARENT_DIR="$(dirname "$SH_DIR")"
+WORKING_DIR="$(basename "$PARENT_DIR")"
+
+
+echo "$WORKING_DIR" Releasing...
+
+REPOSITORY="etidahouse/agreste-ingestor"
+DOCKERFILE="release.Dockerfile"
+
+
+PLATFORMS="linux/amd64,linux/arm64"
+
+if ! docker buildx &>/dev/null; then
+    echo "Docker Buildx not found. Creating a new builder instance..."
+    docker buildx create --use
+fi
+
+docker buildx inspect --bootstrap
+docker buildx build --push --platform $PLATFORMS -t $REPOSITORY:latest -f "$PARENT_DIR/$DOCKERFILE" "$PARENT_DIR"
+
+docker logout
