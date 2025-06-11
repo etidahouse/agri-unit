@@ -23,5 +23,3 @@ fi
 
 docker buildx inspect --bootstrap
 docker buildx build --push --platform $PLATFORMS -t $REPOSITORY:latest -f "$PARENT_DIR/$DOCKERFILE" "$PARENT_DIR"
-
-docker logout
