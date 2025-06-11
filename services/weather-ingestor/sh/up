@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+# shellcheck disable=SC2034
+SH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# shellcheck disable=SC2034
+ROOT_DIR="$(dirname "$SH_DIR")"
+
+
+"$SH_DIR/dev" "go list -m -u all; go get -u; go mod tidy"

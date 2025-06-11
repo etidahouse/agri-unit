@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+# shellcheck disable=SC2034
+SH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# shellcheck disable=SC2034
+ROOT_DIR="$(dirname "$SH_DIR")"
+# shellcheck disable=SC2124
+DEV_COMMAND=${@:-"bash"}
+COMPONENT=$(basename "$ROOT_DIR")
+COMMAND_LABEL="Running $COMPONENT - $DEV_COMMAND"
+
+if [ "$DISABLE_DEV_CONTAINER" == "true" ]; then
+    echo "$COMMAND_LABEL"; bash -c "$DEV_COMMAND"; exit 0
+fi
+
+ROOT_VOLUME=${ROOT_VOLUME:-$ROOT_DIR}
+
+# shellcheck disable=SC2086
+docker run -it --rm \
+    -v "$ROOT_VOLUME:/home" \
+    -w "/home" \
+    -e "DISABLE_DEV_CONTAINER=true" \
+    "$( "$SH_DIR/dev-image-tag" )" bash -c "$DEV_COMMAND"
