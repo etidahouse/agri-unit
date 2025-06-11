@@ -5,8 +5,6 @@ set -e
 SH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 # shellcheck disable=SC2034
 ROOT_DIR="$(dirname "$SH_DIR")"
-# shellcheck disable=SC2124
-DEV_COMMAND=${@:-"bash"}
 
 
 ROOT_VOLUME=${ROOT_VOLUME:-$ROOT_DIR}
@@ -15,5 +13,4 @@ ROOT_VOLUME=${ROOT_VOLUME:-$ROOT_DIR}
 docker run  --rm \
     -v "$ROOT_VOLUME:/home" \
     -w "/home" \
-    -e "DISABLE_DEV_CONTAINER=true" \
     "$( "$SH_DIR/dev-image-tag" )" bash -c "go test -v ./..."
