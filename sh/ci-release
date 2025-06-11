@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+# Get the directory of the current script
+SH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# Get the parent directory of the obtained path
+PARENT_DIR="$(dirname "$SH_DIR")"
+
+
+# Check for uncommitted changes
+if [[ -n $(git status "$PARENT_DIR" -s) ]]; then
+    echo "There are uncommitted changes. Exiting release script."
+    exit 1
+fi
+
+
+echo "agreste-ingestor - Build release..."
+"$PARENT_DIR/services/agreste-ingestor/sh/release"
+
+echo "weather-ingestor - Build release..."
+"$PARENT_DIR/services/weather-ingestor/sh/release"
+
+echo "streamlit-app - Build release..."
+"$PARENT_DIR/services/streamlit-app/sh/release"

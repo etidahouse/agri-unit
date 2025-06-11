@@ -7,4 +7,10 @@ SH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR="$(dirname "$SH_DIR")"
 
 
-"$SH_DIR/dev" "go test -v ./..."
+ROOT_VOLUME=${ROOT_VOLUME:-$ROOT_DIR}
+
+# shellcheck disable=SC2086
+docker run  --rm \
+    -v "$ROOT_VOLUME:/home" \
+    -w "/home" \
+    "$( "$SH_DIR/dev-image-tag" )" bash -c "go test -v ./..."
