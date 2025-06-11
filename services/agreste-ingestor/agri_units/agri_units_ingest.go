@@ -50,8 +50,9 @@ func HandleAgriUnitSurveyIngest(
 	}
 
 	const (
-		HeaderIDNum = "IDNUM"
-		HeaderYear  = "MILEX"
+		HeaderIDNum  = "IDNUM"
+		HeaderYear   = "MILEX"
+		HeaderOTEFDD = "OTEFDD"
 	)
 
 	idNumColIdx, idNumExists := headerMap[HeaderIDNum]
@@ -61,6 +62,10 @@ func HandleAgriUnitSurveyIngest(
 	yearColIdx, yearExists := headerMap[HeaderYear]
 	if !yearExists {
 		return fmt.Errorf("CSV header missing required column: %s", HeaderYear)
+	}
+	otefddColIdx, otefddExists := headerMap[HeaderOTEFDD]
+	if !otefddExists {
+		return fmt.Errorf("CSV header missing required column: %s", HeaderOTEFDD)
 	}
 
 	var newAgriUnits []AgriculturalUnit
@@ -82,6 +87,12 @@ func HandleAgriUnitSurveyIngest(
 		year, err := strconv.Atoi(yearStr)
 		if err != nil {
 			fmt.Printf("Skipping row %d: Invalid %s '%s' - %v\n", i, HeaderYear, yearStr, err)
+			continue
+		}
+
+		val := row[otefddColIdx]
+		num, err := strconv.Atoi(val)
+		if err != nil || num != 1500 {
 			continue
 		}
 
@@ -113,14 +124,6 @@ func HandleAgriUnitSurveyIngest(
 					}
 					surveyDataPayload[colName] = parsedValue
 				}
-			}
-
-			if otfDDVal, ok := surveyDataPayload["OTEFDD"]; ok {
-				if otfDDNum, isFloat := otfDDVal.(float64); !isFloat || otfDDNum != 1500 {
-					continue
-				}
-			} else {
-				continue
 			}
 
 			newSurvey := CreateAgriculturalUnitSurvey(AgriculturalUnitSurveyValue{
