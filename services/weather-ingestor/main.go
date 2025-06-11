@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"weather-ingestor/weather"
+
+	_ "github.com/lib/pq"
 )
 
 type App struct {
