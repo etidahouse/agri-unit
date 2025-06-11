@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
 
-  ingestor:    
+  agreste-ingestor:    
     image: etidahouse/agreste-ingestor:latest
     environment:
       DB_HOST: postgres
@@ -24,6 +24,24 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+    volumes:
+      - ./wait-for-it:/usr/local/bin/wait-for-it
+    entrypoint: ["bash", "/usr/local/bin/wait-for-it", "postgres:5432", "--", "/root/ingestor"]
+
+  weather-ingestor:
+    image: etidahouse/weather-ingestor:latest
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: mysecretpassword
+      DB_NAME: mydatabase
+      API_URL: "https://api.openweathermap.org/data/2.5/weather"
+      API_KEY: api_key
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8080"
     volumes:
       - ./wait-for-it:/usr/local/bin/wait-for-it
     entrypoint: ["bash", "/usr/local/bin/wait-for-it", "postgres:5432", "--", "/root/ingestor"]
