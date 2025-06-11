@@ -46,5 +46,19 @@ services:
       - ./wait-for-it:/usr/local/bin/wait-for-it
     entrypoint: ["bash", "/usr/local/bin/wait-for-it", "postgres:5432", "--", "/root/ingestor"]
 
+  streamlit-app:
+    image: etidahouse/streamlit-app:latest
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: mysecretpassword
+      DB_NAME: mydatabase
+    depends_on:
+      - postgres
+    ports:
+      - "8501:8501"
+
+
 volumes:
   db_data:
