@@ -37,7 +37,7 @@ services:
       DB_PASSWORD: mysecretpassword
       DB_NAME: mydatabase
       API_URL: "https://api.openweathermap.org/data/2.5/weather"
-      API_KEY: api_key
+      API_KEY: 60062362d64ba62075cd6b861ee68a18
     depends_on:
       - postgres
     ports:
@@ -59,6 +59,15 @@ services:
     ports:
       - "8501:8501"
 
+  cron-runner:
+    image: etidahouse/tasks-ingestor:latest
+    depends_on:
+      - agreste-ingestor
+      - weather-ingestor
+    volumes:
+      - ./config/jobs.json:/config/jobs.json
+    environment:
+      CONFIG_PATH: /config/jobs.json
 
 volumes:
   db_data:

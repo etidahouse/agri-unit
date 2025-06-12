@@ -24,3 +24,6 @@ echo "weather-ingestor - Build release..."
 
 echo "streamlit-app - Build release..."
 "$PARENT_DIR/services/streamlit-app/sh/release"
+
+echo "tasks - Build release..."
+"$PARENT_DIR/services/tasks/sh/release"
