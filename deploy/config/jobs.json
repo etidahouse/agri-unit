@@ -1,0 +1,18 @@
+[
+  {
+    "name": "ingest-agreste",
+    "schedule": "* * * * *",
+    "method": "POST",
+    "url": "http://agreste-ingestor:8080/ingest",
+    "body": {
+      "zipUrl": "https://agreste.agriculture.gouv.fr/agreste-web/download/service/SV-Accès micro données RICA/RicaMicrodonnées2023_v2.zip",
+      "csvFileName": "Rica_France_micro_Donnees_ex2023.csv"
+    }
+  },
+  {
+    "name": "ingest-weather",
+    "schedule": "* * * * *",
+    "method": "POST",
+    "url": "http://weather-ingestor:8080/ingest"
+  }
+]
