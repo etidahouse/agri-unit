@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -a -ldflags="-s -w" -
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates bash
+RUN apk --no-cache add ca-certificates bash postgresql-client
 
 WORKDIR /root/
 

@@ -25,8 +25,8 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./wait-for-it:/usr/local/bin/wait-for-it
-    entrypoint: ["bash", "/usr/local/bin/wait-for-it", "postgres:5432", "--", "/root/ingestor"]
+      - ./wait-for-pg:/usr/local/bin/wait-for-pg
+    entrypoint: ["bash", "/usr/local/bin/wait-for-pg", "/root/ingestor"]
 
   weather-ingestor:
     image: etidahouse/weather-ingestor:latest
@@ -43,8 +43,8 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./wait-for-it:/usr/local/bin/wait-for-it
-    entrypoint: ["bash", "/usr/local/bin/wait-for-it", "postgres:5432", "--", "/root/ingestor"]
+      - ./wait-for-pg:/usr/local/bin/wait-for-pg
+    entrypoint: ["bash", "/usr/local/bin/wait-for-pg", "/root/ingestor"]
 
   streamlit-app:
     image: etidahouse/streamlit-app:latest
