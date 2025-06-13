@@ -55,9 +55,35 @@ def load_latest_weather():
     df = pd.read_sql(query, conn)
     return df
 
+@st.cache_data(ttl=300)
+def load_units():
+    conn = get_connection()
+    query = """
+        SELECT
+            au.id,
+            au.id_num,
+            au.latitude,
+            au.longitude,
+            aus.data AS exploitation_data
+        FROM
+            agricultural_units au
+        LEFT JOIN
+            (SELECT DISTINCT ON (id_num) id_num, data, year FROM agricultural_unit_surveys ORDER BY id_num, year DESC) aus
+        ON
+            au.id_num = aus.id_num;
+    """
+    df = pd.read_sql(query, conn)
+    return df
+
+exploitation_variable_labels = {
+    "PBV3COLZ": "Produit Brut : colza (€)",
+    "PBV3BLED": "Produit Brut : blé dur (€)",
+    "PBV3BLET": "Produit Brut : blé tendre et épeautre (€)",
+}
+
 st.title("🌤️ Analyse météo des exploitations agricoles")
 
-tabs = st.tabs(["🗺️ Carte météo", "📈 Historique météo"])
+tabs = st.tabs(["🗺️ Carte météo", "📈 Historique météo", "📊 Analyse Exploitation"])
 
 with tabs[0]:
     st.header("Carte des exploitations avec météo actuelle")
@@ -109,3 +135,52 @@ with tabs[1]:
 
         st.subheader("🌦️ Conditions météo")
         st.dataframe(df_hist[["created_at", "weather_main"]])
+
+with tabs[2]:
+    st.header("📊 Analyse des Gains en Céréales par Exploitation")
+    st.write("Sélectionnez une exploitation pour visualiser ses **Produits Bruts pour le Colza, le Blé Dur et le Blé Tendre/Épeautre**.")
+
+    units = load_units()
+    if not units.empty:
+        selected_unit_id_num = st.selectbox(
+            "Choisir une exploitation",
+            units["id_num"],
+            key='cereals_analysis_select'
+        )
+    
+        selected_unit_data = units[units["id_num"] == selected_unit_id_num].iloc[0]
+        exploitation_data_jsonb = selected_unit_data.get('exploitation_data')
+
+        if exploitation_data_jsonb is None:
+            st.warning(f"Pas de données d'enquête (jsonb) disponibles pour l'exploitation {selected_unit_id_num}.")
+        else:
+            colza_value = exploitation_data_jsonb.get("PBV3COLZ", 0)
+            bledur_value = exploitation_data_jsonb.get("PBV3BLED", 0)
+            bletendre_value = exploitation_data_jsonb.get("PBV3BLET", 0)
+
+            colza_value = colza_value if isinstance(colza_value, (int, float)) else 0
+            bledur_value = bledur_value if isinstance(bledur_value, (int, float)) else 0
+            bletendre_value = bletendre_value if isinstance(bletendre_value, (int, float)) else 0
+
+            cereal_data_for_display = {
+                exploitation_variable_labels["PBV3COLZ"]: colza_value,
+                exploitation_variable_labels["PBV3BLED"]: bledur_value,
+                exploitation_variable_labels["PBV3BLET"]: bletendre_value,
+            }
+
+            st.write(f"**Produits Bruts pour l'exploitation {selected_unit_id_num}**")
+            st.dataframe(pd.DataFrame(list(cereal_data_for_display.items()), columns=["Céréale", "Produit Brut (€)"]).set_index("Céréale"))
+
+            fig_selected_cereals = px.bar(
+                pd.DataFrame(list(cereal_data_for_display.items()), columns=["Céréale", "Produit Brut (€)"]),
+                x="Céréale",
+                y="Produit Brut (€)",
+                title=f"Produits Bruts de l'exploitation {selected_unit_id_num}",
+                labels={"Produit Brut (€)": "Valeur en Euros (€)"},
+                color="Céréale"
+            )
+            fig_selected_cereals.update_layout(xaxis_title="Type de Céréale", yaxis_title="Produit Brut en Euros (€)")
+            st.plotly_chart(fig_selected_cereals)
+
+    else:
+        st.info("Aucune exploitation disponible pour l'analyse des céréales.")
